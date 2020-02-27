@@ -6,7 +6,6 @@ import com.tcsms.securityserver.Config.ExceptionInfo;
 import com.tcsms.securityserver.Config.WarningInfo;
 import com.tcsms.securityserver.Entity.DeviceRegistry;
 import com.tcsms.securityserver.Entity.OperationLog;
-import com.tcsms.securityserver.JSON.SendJSON;
 import com.tcsms.securityserver.Service.ServiceImp.RedisServiceImp;
 import com.tcsms.securityserver.Service.ServiceImp.RestTemplateServiceImp;
 import com.tcsms.securityserver.Utils.SpringUtil;
@@ -19,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tcsms.securityserver.Config.ConstantConfig.*;
+import static com.tcsms.securityserver.Config.ConstantConfig.ALLOWED_NOT_RUNNING_TIME;
+import static com.tcsms.securityserver.Config.ConstantConfig.MODERATE_BREEZE;
 
 @Log4j2
 public class ManagerMonitor extends TcsmsMonitor {
@@ -53,6 +53,8 @@ public class ManagerMonitor extends TcsmsMonitor {
                 log.info("ManagerMonitor正在运行--------------");
                 for (DeviceRegistry device : deviceList) {
                     OperationLog operationLog = gson.fromJson(jedis.get(device.getDeviceId()), OperationLog.class);
+
+                    //判断设备的运行参数时候有变化
                     long compareCode = operationLog.getHeight().hashCode() + operationLog.getOperator().hashCode() +
                             operationLog.getRadius().hashCode() +
                             operationLog.getWorkerId().hashCode() +
@@ -60,6 +62,7 @@ public class ManagerMonitor extends TcsmsMonitor {
                             MonitorManager.getWarningCount(operationLog.getDeviceId());
                     Map<String, Long> value = comparator.getOrDefault(operationLog.getDeviceId(), null);
                     long now = formatter.parse(operationLog.getTime()).getTime();
+                    //首次运行的设备初始化其compareCode和pauseDate
                     if (value == null) {
                         Map<String, Long> map = new HashMap<>();
                         map.put("compareCode", compareCode);
@@ -70,6 +73,7 @@ public class ManagerMonitor extends TcsmsMonitor {
                         if (value.get("compareCode") == compareCode && operationLog.getWindVelocity() < MODERATE_BREEZE) {
                             //如果设备有30分钟没有在运行、没有发出过警报、风速不到4级黄色预警就让设备暂停监控，等之后重新运行后开启；
                         } else {
+
                             long pauseDate = now + ALLOWED_NOT_RUNNING_TIME;
                             value.put("pauseDate", pauseDate);
                             comparator.put(operationLog.getDeviceId(), value);
@@ -87,7 +91,7 @@ public class ManagerMonitor extends TcsmsMonitor {
             e.printStackTrace();
         } catch (InterruptedException e) {
             JsonArray data = getData();
-            sendException(ExceptionInfo.MANAGER_MONITOR_ACCIDENTALLY_STOP,data);
+            sendException(ExceptionInfo.MANAGER_MONITOR_ACCIDENTALLY_STOP, data);
         }
     }
 }

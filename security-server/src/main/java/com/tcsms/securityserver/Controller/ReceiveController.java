@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 
 
-
 @RestController
 @Log4j2
 public class ReceiveController {
@@ -23,7 +22,7 @@ public class ReceiveController {
     ReceiveServiceImp receiveService;
 
     @RequestMapping(value = "/operationLog", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String receiveOperationLog(@RequestBody String json) {
+    public void receiveOperationLog(@RequestBody String json) {
         Gson gson = new Gson();
         OperationLog operationLog = gson.fromJson(json, OperationLog.class);
         BigDecimal radius = new BigDecimal(operationLog.getRadius());
@@ -31,8 +30,8 @@ public class ReceiveController {
         BigDecimal torque = radius.multiply(weight).multiply(new BigDecimal(ConstantConfig.G));
         double Torque = torque.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         operationLog.setTorque(Torque);
+        log.info(operationLog);
         receiveService.receive(operationLog);
-        return "0";
     }
 
 }

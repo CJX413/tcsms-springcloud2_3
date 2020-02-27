@@ -49,8 +49,8 @@ public class DeviceCollisionMonitor extends TcsmsMonitor {
         GlobalCoordinates source = new GlobalCoordinates(device_1.getLatitude(), device_1.getLongitude());
         GlobalCoordinates target = new GlobalCoordinates(device_2.getLatitude(), device_2.getLongitude());
         GeodeticCalculator geodeticCalculator = new GeodeticCalculator();
-        double istance = geodeticCalculator.calculateGeodeticCurve(Ellipsoid.Sphere, source, target).getEllipsoidalDistance();
-        return istance;
+        double distance = geodeticCalculator.calculateGeodeticCurve(Ellipsoid.Sphere, source, target).getEllipsoidalDistance();
+        return distance;
     }
 
     public double getBearing() {

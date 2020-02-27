@@ -1,30 +1,31 @@
 <template>
-  <div>
-    <el-card class="box-card" style="width: 480px">
-      <div slot="header" class="clearfix">
-        <span>设备名：{{device.deviceId}}</span>
-      </div>
-      <el-row>
-        <el-col :span="12"><span>是否注册：{{device.isRegistered}}</span></el-col>
-        <el-col :span="12"><span>设备型号：{{device.deviceModel}}</span></el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12"><span>纬度：{{device.latitude}}</span></el-col>
-        <el-col :span="12"><span>经度：{{device.longitude}}</span></el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12"><span>吊臂高度：{{device.bigHeight}}</span></el-col>
-        <el-col :span="12"><span>顶部高度：{{device.bigHeight+device.smallHeight}}</span></el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12"><span>大臂：{{device.bigLength}}</span></el-col>
-        <el-col :span="12"><span>小臂：{{device.smallLength}}</span></el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12"><span>额定力矩：{{device.rlt}}</span></el-col>
-      </el-row>
-    </el-card>
-  </div>
+  <el-card class="box-card" style="width: 480px">
+    <div slot="header" class="clearfix">
+      <span>设备名：{{device.deviceId}}</span>
+    </div>
+    <el-row>
+      <el-col :span="12">
+        <span v-if="device.isRegistered==='1'">是否注册：是</span>
+        <span v-else>是否注册：否</span>
+      </el-col>
+      <el-col :span="12"><span>设备型号：{{device.deviceModel}}</span></el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12"><span>纬度：{{device.latitude}}</span></el-col>
+      <el-col :span="12"><span>经度：{{device.longitude}}</span></el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12"><span>吊臂高度：{{device.bigHeight}}m</span></el-col>
+      <el-col :span="12"><span>顶部高度：{{device.bigHeight+device.smallHeight}}m</span></el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12"><span>大臂长：{{device.bigLength}}m</span></el-col>
+      <el-col :span="12"><span>小臂长：{{device.smallLength}}m</span></el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12"><span>额定力矩：{{device.rlt}}N/m</span></el-col>
+    </el-row>
+  </el-card>
 </template>
 
 <script>

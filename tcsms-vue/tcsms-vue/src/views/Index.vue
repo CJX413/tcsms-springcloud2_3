@@ -2,7 +2,7 @@
   <el-container>
     <el-header style="padding: 0">
       <el-menu
-        :default-active="activeIndex"
+        @select="headerHandleSelect"
         class="el-menu-demo"
         mode="horizontal"
         background-color="#545c64"
@@ -19,7 +19,7 @@
             <el-submenu index="2">
               <template slot="title">
                 <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-                <span>陈嘉兴</span>
+                <span>{{this.userInfo.name}}</span>
               </template>
               <el-menu-item index="2-1">
                 <i class="el-icon-user-solid"></i>
@@ -47,9 +47,9 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
-          default-active="2"
+          default-active="1"
           class="el-menu-vertical-demo"
-          @select="handleSelect" style="text-align: left">
+          @select="asideHandleSelect" style="text-align: left">
           <el-menu-item index="1">
             <i class="el-icon-location"></i>
             <span>设备位置</span>
@@ -73,26 +73,80 @@
         </el-menu>
       </el-aside>
       <el-main>
-        <device-location></device-location>
+        <component v-bind:is="componentType" v-if="componentType==='user-info'" :userInfo="userInfo"></component>
+        <component v-bind:is="componentType" v-else></component>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
-  import DeviceLocation from '../components/DeviceLocation.vue'
+
 
   export default {
     name: "Index",
-    components: {DeviceLocation},
+    components: {
+      DeviceLocation: () => import("../components/DeviceLocation.vue"),
+      VideoMonitor: () => import("../components/VideoMonitor.vue"),
+      UserInfo: () => import("../components/UserInfo.vue"),
+    },
     data() {
       return {
-        activeIndex: '1',
+        userInfo: {
+          username: '',
+          name: '',
+          workerId: '',
+          phoneNumber: '',
+          sex: '',
+        },
+        componentType: 'device-location',
       };
     },
+    mounted() {   //初始化页面要在mounted方法中调用自己也得初始化方法
+      this.initPage();
+    },
     methods: {
-      handleSelect(key, keyPath) {
-        console.log(key, keyPath);
+      initPage() {
+        this.axios.post('http://localhost:8080/userInfo', {})
+          .then((response) => {
+            this.userInfo = response.data;
+          });
+      },
+      headerHandleSelect(key) {
+        console.log(key);
+        switch (key) {
+          case "1":
+            this.componentType = '';
+            break;
+          case "2-1":
+            this.componentType = 'user-info';
+            break;
+          case "2-2":
+            break;
+          case "2-3":
+            break;
+          case "3":
+            break;
+          default:
+        }
+      },
+      asideHandleSelect(key) {
+        console.log(key);
+        switch (key) {
+          case "1":
+            this.componentType = 'device-location';
+            break;
+          case "2":
+            this.componentType = 'video-monitor';
+            break;
+          case "3":
+            break;
+          case "4":
+            break;
+          case "5":
+            break;
+          default:
+        }
       },
     }
   }

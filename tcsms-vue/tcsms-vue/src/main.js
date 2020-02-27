@@ -9,6 +9,9 @@ import axios from 'axios'
 import VueResource from 'vue-resource'
 import VueWechatTitle from 'vue-wechat-title'
 import BaiduMap from 'vue-baidu-map'
+import global from './global.js'
+
+Vue.prototype.global = global;
 
 Vue.use(VueWechatTitle);
 Vue.use(VueResource);
@@ -20,15 +23,12 @@ Vue.use(BaiduMap, {
   ak: 'rOsG2lx0to18nZrBCaxAjWdzBYASHGaL'
 });
 
-
 // http request 请求拦截器
 axios.interceptors.request.use(request => {
   // 在发送请求之前做些什么
-  let url = request.url;
-  if (localStorage.getItem('token')) {
-    if (!url.match('/auth(.*?)')) {
-      request.headers.authorization = 'Bearer ' + localStorage.getItem('token');
-    }
+  let token = localStorage.getItem('token');
+  if (token != null) {
+    request.headers.authorization = 'Bearer ' + localStorage.getItem('token');
   }
   return request;
 }, error => {
@@ -48,7 +48,13 @@ axios.interceptors.response.use(response => {
           path: '/auth/login'
           //登录成功后跳入浏览的当前页面
           // query: {redirect: router.currentRoute.fullPath}
-        })
+        });
+        break;
+      case 404:
+        router.replace({
+          //跳转到404页面
+          path: '/404'
+        });
     }
     // 返回接口返回的错误信息
     return Promise.reject(error.response.data);
@@ -69,10 +75,9 @@ router.beforeEach((to, from, next) => {
           } else {
             next('/auth/login');
           }
-
         }).catch((error) => {
         console.log(error);
-        next('/auth/login');
+        next('/404');
       });
     }
   } else {

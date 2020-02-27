@@ -153,9 +153,9 @@ public class DeviceRegistry implements Serializable{
                 "\"latitude\":" + latitude + "," +
                 "\"rlt\":" + rlt + "," +
                 "\"bigHeight\":" + bigHeight + "," +
-                "\"latitude\":" + smallHeight + "," +
-                "\"latitude\":" + bigLength + "," +
-                "\"latitude\":" + smallLength +
+                "\"smallHeight\":" + smallHeight + "," +
+                "\"bigLength\":" + bigLength + "," +
+                "\"smallLength\":" + smallLength +
                 "}";
     }
     public JsonObject getJsonObject() {

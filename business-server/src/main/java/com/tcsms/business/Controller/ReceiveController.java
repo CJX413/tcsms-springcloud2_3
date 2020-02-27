@@ -21,6 +21,6 @@ public class ReceiveController {
     @RequestMapping(value = "/error", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String receiveError(@RequestBody String json) {
         log.info(json);
-        return new ResultJSON(200,true,"接收到报警信号！",null).toString();
+        return new ResultJSON(200,true,"接收到出错信号！",null).toString();
     }
 }

@@ -10,7 +10,7 @@ public class ResultJSON {
 
     }
 
-    public ResultJSON(Integer code, Boolean success, String massege, Object result) {
+    public ResultJSON(Integer code, Boolean success, String message, Object result) {
         this.code = code;
         this.success = success;
         this.message = message;

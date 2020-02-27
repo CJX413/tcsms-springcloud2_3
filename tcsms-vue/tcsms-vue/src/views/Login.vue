@@ -1,36 +1,37 @@
 <template>
-    <el-card class="login-box">
-      <!-- 通过:rules="loginFormRules"来绑定输入内容的校验规则 -->
-      <el-form :rules="loginFormRules" ref="loginForm" :model="loginForm" label-position="right" label-width="auto"
-               show-message>
-        <span class="login-title">欢迎登录</span>
-        <div style="margin-top: 5px"></div>
-        <div>
-          <el-form-item label="用户名:" prop="loginName">
-            <el-col :span="22"><el-input placeholder="手机号" type="text" v-model="loginForm.loginName"></el-input>
+  <el-card class="login-box">
+    <!-- 通过:rules="loginFormRules"来绑定输入内容的校验规则 -->
+    <el-form :rules="loginFormRules" ref="loginForm" :model="loginForm" label-position="right" label-width="auto"
+             show-message>
+      <span class="login-title">欢迎登录</span>
+      <div style="margin-top: 5px"></div>
+      <div>
+        <el-form-item label="用户名:" prop="loginName">
+          <el-col :span="22">
+            <el-input placeholder="手机号" type="text" v-model="loginForm.loginName"></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="密码:" prop="loginPassword">
+          <el-col :span="22">
+            <el-input type="password" v-model="loginForm.loginPassword"></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-col :span="22">
+            <el-col style="text-align: right">
+              <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
             </el-col>
-          </el-form-item>
-          <el-form-item label="密码:" prop="loginPassword">
-            <el-col :span="22">
-              <el-input type="password" v-model="loginForm.loginPassword"></el-input>
-            </el-col>
-          </el-form-item>
-          <el-form-item>
-            <el-col :span="22">
-              <el-col style="text-align: right">
-                <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
-              </el-col>
-              <el-button type="primary" style="width: inherit" @click="loginSubmit('loginForm')">登录</el-button>
-            </el-col>
-          </el-form-item>
-        </div>
-        <el-row style="text-align: center; margin-top: -10px;;">
-          <el-link type="primary" @click="">忘记密码</el-link>
-          <el-link type="primary" @click="doRegister()">用户注册</el-link>
-          <el-link type="primary" @click="">手机登录</el-link>
-        </el-row>
-      </el-form>
-    </el-card>
+            <el-button type="primary" style="width: inherit" @click="loginSubmit('loginForm')">登录</el-button>
+          </el-col>
+        </el-form-item>
+      </div>
+      <el-row style="text-align: center; margin-top: -10px;;">
+        <el-link type="primary" @click="">忘记密码</el-link>
+        <el-link type="primary" @click="doRegister()">用户注册</el-link>
+        <el-link type="primary" @click="">手机登录</el-link>
+      </el-row>
+    </el-form>
+  </el-card>
 </template>
 <script>
 
@@ -77,6 +78,7 @@
               let res = response.data;
               if (res.code === 200) {
                 localStorage.setItem('token', res.token);
+                this.localSocket();
                 this.$router.push({path: '/index'})
               } else {
                 this.$alert(res.message, '登录失败', {
@@ -84,6 +86,28 @@
                 });
               }
             });
+        }
+      },
+      localSocket() {
+        let that = this;
+        if ("WebSocket" in window) {
+          console.log("您的浏览器支持 WebSocket!");
+
+          that.ws = new WebSocket('ws://localhost:8080/webSocket/' + localStorage.getItem('token'));
+          that.global.setWs(that.ws);
+          that.ws.onopen = function () {
+            //连接建立之后执行send方法发送数据
+            console.log('websocket打开');
+          };
+          that.ws.onerror = function () {
+            that.localSocket();
+          };
+          that.ws.onclose = function (e) {
+            console.log('断开连接', e);
+          };
+        } else {
+          // 浏览器不支持 WebSocket
+          console.log("您的浏览器不支持 WebSocket!");
         }
       }
     }

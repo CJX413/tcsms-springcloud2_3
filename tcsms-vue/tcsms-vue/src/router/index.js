@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../views/Login'
 import Welcome from '../views/Welcome'
 import Index from '../views/Index'
+import Page404 from '../views/Page404'
 
 Vue.use(VueRouter);
 
@@ -35,6 +36,15 @@ export default new VueRouter({
       meta: {
         title: '首页',
         requireAuth: true
+      }
+    },
+    {
+      path: '/404',
+      name: '404',
+      component: Page404,
+      meta: {
+        title: '404',
+        requireAuth: false
       }
     },
   ]
